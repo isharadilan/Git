@@ -92,3 +92,13 @@ const submit = () => {
         </form>
     </GuestLayout>
 </template>
+
+
+<style>
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+</style>
