@@ -28,6 +28,7 @@ Route::get('/' , [HomeController::class,"index"])->name('dashboard');
 Route::prefix('/students')->group(function (){
     Route::get('/' , [StudentsController::class,"index"])->name('students');
     Route::post('/store' , [StudentsController::class,"store"])->name('students.store');
+    Route::get('{student_id}/get' , [StudentsController::class,"get"])->name('students.get');
     Route::get('/edit' , [StudentsController::class,"edit"])->name('students.edit');
     Route::post('/{student_id}/update' , [StudentsController::class,"update"])->name('students.update');
     Route::get('/{student_id}/delete' , [StudentsController::class,"delete"])->name('students.delete');

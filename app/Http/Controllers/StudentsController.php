@@ -57,4 +57,10 @@ class StudentsController extends ParentController
         return redirect()->back();
     }
 
+    public function get($student_id){
+        StudentsFacade::get($student_id);
+        return redirect()->back();
+
+    }
+
 }
