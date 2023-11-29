@@ -1,80 +1,118 @@
-<script>
-import { onMounted } from 'vue';
-import axios from 'axios';
-import { ref } from 'vue';
+ <template>
+    <AppLayout>
+      <template #content>
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-12 text-center">
+              <h1 class='page-title' style="color: #6c757d; font-size: 2.5rem; margin-top: vh;">My Students List</h1>
+            </div>
+          </div>
 
-export default {
-  components: {
-    AppLayout
-  },
+          <div class="col-lg-8 mx-auto">
+            <div class="row">
+              <div class="col-lg-6 mb-4">
+                <img src="https://free-vectors.net/_ph/10/924162920.jpg" alt="Vector Image" class="img-fluid">
+              </div>
 
-  setup() {
-    const student_list = ref([]);
-    const student = ref({
-      name: '',
-      image: '',
-      age: ''
-    });
+              <div class="col-lg-6">
+                <form @submit.prevent="studentStore" enctype="multipart/form-data"
+                      style="background-color: #f2f2f2; padding: 20px; border-radius: 10px; max-width: 400px; margin: auto;">
 
-    const handleImageChange = (event) => {
-      student.value.image = event.target.files[0];
-    };
+                  <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input class="form-control" name="name" v-model="student.name" type="text" placeholder="Enter Name" required>
+                  </div>
 
-    const studentStore = async () => {
-      try {
-        let formData = new FormData();
-        formData.append('name', student.value.name);
-        formData.append('image', student.value.image);
-        formData.append('age', student.value.age);
+                  <div class="mb-3">
+                    <label for="image" class="form-label">Image</label>
+                    <input class="form-control" name="image" type="file" @change="handleImageChange" required>
+                  </div>
 
-        // Make the post request to store the new student
-        await axios.post(route('students.store'), formData);
+                  <div class="mb-3">
+                    <label for="age" class="form-label">Age</label>
+                    <input class="form-control" name="age" v-model="student.age" type="number" placeholder="Enter Age" required>
+                  </div>
 
-        // Fetch the updated list of students after the addition
-        await loadStudents();
+                  <div class="text-center">
+                    <button class="btn btn-primary">Submit</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
 
-        // Clear the form fields after submission
-        student.value = {
+          <div class="col-lg-12 mt-5">
+            <table class="table table-hover">
+              <thead class="table-dark">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Image</th>
+                  <th scope="col">Age</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(student, key) in students" :key="key">
+                  <th scope="row">{{ key + 1 }}</th>
+                  <td>{{ student.name }}</td>
+                  <td><img src="{{ student.image }}" width="50" height="50"></td>
+                  <td>{{ student.age }}</td>
+                  <td>
+                    <span v-if="student.status === 0" class="badge bg-warning">Inactive</span>
+                    <span v-else class="badge bg-success">Active</span>
+                  </td>
+                  <td>
+                    <a :href="route('students.delete', student.id)" class="btn btn-danger"><i class="far fa-trash-alt"></i></a>
+                    <a :href="route('students.active', student.id)" class="btn btn-success"><i class="far fa-solid fa-eye"></i></a>
+                    <a href="javascript:void(0)" class="btn btn-info" @click="studentEditModal(student.id)"><i class="fas fa-edit"></i></a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </template>
+    </AppLayout>
+  </template>
+
+  <script>
+  import AppLayout from '@/Layouts/App.vue';
+  import axios from 'axios';
+
+  export default {
+    components: {
+      AppLayout
+    },
+    props: {
+      students: Array
+    },
+    data() {
+      return {
+        student: {
           name: '',
           image: '',
           age: ''
-        };
-      } catch (error) {
-        console.error('Error storing student:', error);
+        }
+      };
+    },
+    methods: {
+      handleImageChange(event) {
+        this.student.image = event.target.files[0];
+      },
+      async studentStore() {
+        let formData = new FormData();
+        formData.append('name', this.student.name);
+        formData.append('image', this.student.image);
+        formData.append('age', this.student.age);
+
+        await axios.post(route('students.store'), formData);
       }
-    };
+    }
+  };
+  </script>
 
-    const loadStudents = async () => {
-      try {
-        // Fetch the updated list of students
-        const updatedStudents = (await axios.get(route('students.index'))).data.students;
-        student_list.value = updatedStudents;
-      } catch (error) {
-        console.error('Error loading students:', error);
-      }
-    };
+  <style lang="scss" scoped>
 
-    const deleteStudent = async (studentId) => {
-      try {
-        // Make the delete request to remove the student
-        await axios.delete(route('students.delete', studentId));
-
-        // Fetch the updated list of students after the deletion
-        await loadStudents();
-      } catch (error) {
-        console.error('Error deleting student:', error);
-      }
-    };
-
-    // Fetch the initial list of students when the component is mounted
-    onMounted(loadStudents);
-
-    return {
-      student_list,
-      handleImageChange,
-      studentStore,
-      deleteStudent
-    };
-  }
-};
-</script>
+</style>
