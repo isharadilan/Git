@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Students;
-use domain\Facades\Studentsfacade;
+use domain\Facades\StudentsFacade;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -20,14 +20,14 @@ class StudentsController extends ParentController
     public function store(Request $request){
         $data = $request->all();
 
-        if ($request->hasFile('Image')) {
-            $imagePath = $request->file('Image')->store('images', 'public');
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images', 'public');
             $data['image'] = $imagePath;
         }
 
         StudentsFacade::store($data);
-
-        return redirect()->back();
+        $response = StudentsFacade::all();
+        return response()->json($response);
     }
 
 

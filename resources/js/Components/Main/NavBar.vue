@@ -19,7 +19,7 @@
 
 
             <span class="mr-2">
-                <Link :href="route('login')"> Login </Link>
+                <Link :href="route('login')" >Login</Link>
             </span>
             <span>
                 <Link :href="route('register')" class="btn btn-success">Register</Link>
@@ -45,7 +45,7 @@ export default{
 
 </script>
 
-<style lang="css" scoped>
+<style lang="scss" scoped>
 
 </style>
 
